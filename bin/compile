@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir> <env-dir>
+set -o errexit    # always exit on error
+set -o pipefail   # don't ignore exit codes when piping output
+set -o posix      # more strict failures in subshells
+
+BUILD_DIR=${1:-}
+CACHE_DIR=${2:-}
+ENV_DIR=${3:-}
+
+sh scripts/add-sshkey.sh ${ENV_DIR}
+
+(
+    cd ${BUILD_DIR} &>/dev/null
+    
+    cat ${BUILD_DIR}/.heroku-private-build.lst|while read repo_url ; do
+        buildpack_code=$(echo ${repo_url}|md5sum|tr -d ' -')
+        buildpack_name="__buildpack_${buildpack_code}"
+        buildpack_path="${BUILD_DIR}/${buildpack_name}"
+
+        echo "Pulling code for: $repo_url"
+        git clone ${repo_url} ${buildpack_name}
+
+        if [ -f ${buildpack_path}/bin/compile ]; then
+            echo "Calling 'compile' for buildpack: ${repo_url}"
+            ${buildpack_path}/bin/compile  "${BUILD_DIR}" "${CACHE_DIR}" "${ENV_DIR}"
+            res=$?
+
+            if [ ${res} -ne 0 ] ; then
+                exit ${res}
+            fi
+        else
+            echo "No compile file in app"
+            exit 1
+        fi
+    done
+) || exit 1
+

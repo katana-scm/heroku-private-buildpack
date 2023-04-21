@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# bin/release <build-dir>
+BUILD_DIR=${1:-}
+
+(
+    cd ${BUILD_DIR} &>/dev/null
+
+    if [ ! -f ${BUILD_DIR}/.heroku-private-build.lst ] ; then
+        return 0
+    fi
+
+    cat ${BUILD_DIR}/.heroku-private-build.lst|while read repo_url ; do
+        buildpack_code=$(echo ${repo_url}|md5sum|tr -d ' -')
+        buildpack_name=__buildpack_${buildpack_code}
+        buildpack_path=${BUILD_DIR}/${buildpack_name}
+
+        if [ ! -f ${buildpack_path}/bin/release ]; then
+            continue
+        fi
+       
+        ${buildpack_path}/bin/release ${BUILD_DIR} &>/dev/null   
+    done
+
+    if [ -f ${BUILD_DIR}/.heroku-private-metadata.yml ] ; then
+        cat ${BUILD_DIR}/.heroku-private-metadata.yml
+    fi
+) || exit 1

@@ -1,0 +1,7 @@
+{
+    "name": "Heroku Private Buildpack",
+    "description": "This Heroku Buildpack clones and executes buildpacks from private repositories",
+    "scripts": {},
+    "buildpacks": [],
+    "environments": {}
+  }
