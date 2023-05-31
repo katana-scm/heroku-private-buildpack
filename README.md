@@ -9,7 +9,7 @@ It hooks in only to the release and compile api.
 1. Add the buildpack: 
 
   ```shell
-  heroku buildpacks:add https://github.com/allanpaiste/heroku-private-buildpack.git \
+  heroku buildpacks:add https://github.com/katana-scm/heroku-private-buildpack.git \
     --index 1 -a my-application
   ```
 
