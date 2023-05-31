@@ -13,6 +13,13 @@ It hooks in only to the release and compile api.
     --index 1 -a my-application
   ```
 
+  IMPORTANT: we do NOT add the buildpack for the heroku app with Heroku CLI (`heroku buildpack:add`)
+  as that would not work out for us as we can then have control over how git clone within the 
+  buildpack inclusion logic will be used. We only add this repository as buildpack and continue
+  listing the private buildpacks as shown below (next step). In case you have added the buildpack that
+  is hosted in a private repository to heroku via official buildpacks support (the CLI command above),
+  please remove them with `heroku buildpack:remove`.
+
 1. Add a file in the project root `.heroku-private-build.lst` that would contain plain list 
    of private build pack repository URLs:
 
