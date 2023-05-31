@@ -1,6 +1,7 @@
 # heroku-private-buildpack
 
-This supports loading a build pack from a private git repository.
+This supports loading a build pack from a private git repository. Basically it's a buildpack that installs buildpacks 
+which provides alternative path to standard Heroku buildpack API (`heroku buildpack`) which only works against public repositories.
 
 It hooks in only to the release and compile api.
 
